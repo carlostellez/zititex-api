@@ -1,0 +1,81 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zititex-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://zititex:zititex@postgres:5432/zititex_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+    networks:
+      - zititex-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: zititex-postgres
+    environment:
+      - POSTGRES_USER=zititex
+      - POSTGRES_PASSWORD=zititex
+      - POSTGRES_DB=zititex_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zititex"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zititex-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: zititex-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zititex-network
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: zititex-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@zititex.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - zititex-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  zititex-network:
+    driver: bridge
