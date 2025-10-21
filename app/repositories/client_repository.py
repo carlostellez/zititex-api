@@ -7,7 +7,7 @@ providing clean separation between business logic and data access.
 
 from typing import List, Optional
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -105,7 +105,8 @@ class ClientRepository:
         Returns:
             Client instance or None if not found
         """
-        return self.db.query(Client).filter(Client.id == client_id).first()
+        result = self.db.execute(select(Client).where(Client.id == client_id))
+        return result.scalar_one_or_none()
 
     async def get_by_email_async(self, email: str) -> Optional[Client]:
         """
@@ -130,7 +131,8 @@ class ClientRepository:
         Returns:
             Client instance or None if not found
         """
-        return self.db.query(Client).filter(Client.email == email).first()
+        result = self.db.execute(select(Client).where(Client.email == email))
+        return result.scalar_one_or_none()
 
     async def get_all_async(
         self, skip: int = 0, limit: int = 100
@@ -161,13 +163,10 @@ class ClientRepository:
         Returns:
             List of client instances
         """
-        return (
-            self.db.query(Client)
-            .order_by(Client.created_at.desc())
-            .offset(skip)
-            .limit(limit)
-            .all()
+        result = self.db.execute(
+            select(Client).offset(skip).limit(limit).order_by(Client.created_at.desc())
         )
+        return list(result.scalars().all())
 
     async def update_async(
         self, client_id: int, client_data: ClientUpdate
@@ -233,6 +232,7 @@ class ClientRepository:
         if not client:
             return False
 
+        # Note: delete() is not async in SQLAlchemy 2.0
         await self.db.delete(client)
         await self.db.commit()
         return True
@@ -272,5 +272,6 @@ class ClientRepository:
         Returns:
             Total count of clients
         """
-        return self.db.query(Client).count()
+        result = self.db.execute(select(func.count()).select_from(Client))
+        return result.scalar()
 

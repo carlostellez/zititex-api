@@ -25,10 +25,16 @@ class TestAppCreation:
         """Test that CORS middleware is configured."""
         test_app = create_app()
 
-        # Check that middleware is present
-        assert any(
-            "CORSMiddleware" in str(type(m)) for m in test_app.user_middleware
-        )
+        # Check that middleware is present in middleware_stack
+        middleware_types = [str(type(m)) for m in test_app.user_middleware]
+        has_cors = any("CORSMiddleware" in m_type for m_type in middleware_types)
+        
+        # Also check in the middleware stack
+        if not has_cors and hasattr(test_app, 'middleware_stack'):
+            stack_str = str(test_app.middleware_stack)
+            has_cors = "CORSMiddleware" in stack_str
+        
+        assert has_cors, f"CORS middleware not found. User middleware: {middleware_types}"
 
 
 class TestHealthEndpoint:

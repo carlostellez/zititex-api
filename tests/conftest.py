@@ -85,10 +85,14 @@ async def async_test_db(
         async_test_engine,
         class_=AsyncSession,
         expire_on_commit=False,
+        autoflush=False,
+        autocommit=False,
     )
 
     async with AsyncTestingSessionLocal() as session:
         yield session
+        # Rollback any uncommitted changes after test
+        await session.rollback()
 
 
 # Test client fixtures
