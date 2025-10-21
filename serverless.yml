@@ -1,0 +1,67 @@
+service: zititex-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.12
+  region: 'us-east-2'
+  stage: ${opt:stage, 'prod'}
+
+  apiGateway:
+    apiKeys:
+      - zititex-api-key-${self:provider.stage}  # Serverless crea ApiKey y UsagePlan automáticamente
+
+  environment:
+    STAGE: ${self:provider.stage}
+    DEBUG: false
+    MAILGUN_API_KEY: ${env:MAILGUN_API_KEY}
+    MAILGUN_DOMAIN: ${env:MAILGUN_DOMAIN}
+    ADMIN_EMAIL: ${env:ADMIN_EMAIL}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+
+  memorySize: 512
+  timeout: 30
+  logRetentionInDays: 14
+
+functions:
+  api:
+    handler: app.main.handler
+    events:
+      # Contact endpoint
+      - http:
+          path: /api/v1/contact
+          method: POST
+          cors: true
+          private: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+    requirementsFile: requirements.txt
+    noDeploy:
+      - black
+      - isort
+      - flake8
+      - mypy
+      - pre-commit
+      - pytest
+      - pytest-*
+      - coverage
+    zip: false
+    slim: false
+    usePoetry: false
+    useStaticCache: false
+    useDownloadCache: false

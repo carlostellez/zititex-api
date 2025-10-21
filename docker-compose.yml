@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: zititex-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-zititex_db}
+      MYSQL_USER: ${MYSQL_USER:-zititex_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-zititex_pass}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - zititex-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zititex-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      # Application
+      APP_NAME: ${APP_NAME:-Zititex API}
+      APP_VERSION: ${APP_VERSION:-0.1.0}
+      DEBUG: ${DEBUG:-false}
+      
+      # Database
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: ${MYSQL_USER:-zititex_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-zititex_pass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-zititex_db}
+      
+      # Mailgun
+      MAILGUN_API_KEY: ${MAILGUN_API_KEY}
+      MAILGUN_DOMAIN: ${MAILGUN_DOMAIN}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      
+      # CORS
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - zititex-network
+    volumes:
+      - ./app:/app/app:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PhpMyAdmin (Optional - for database management)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: zititex-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "${PHPMYADMIN_PORT:-8080}:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${MYSQL_USER:-zititex_user}
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-zititex_pass}
+      UPLOAD_LIMIT: 50M
+    depends_on:
+      - mysql
+    networks:
+      - zititex-network
+    profiles:
+      - tools
+
+networks:
+  zititex-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+

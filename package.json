@@ -1,0 +1,28 @@
+{
+  "name": "zititex-api",
+  "version": "1.0.0",
+  "description": "FastAPI serverless application with MySQL integration",
+  "main": "index.js",
+  "scripts": {
+    "deploy:dev": "serverless deploy --stage dev",
+    "deploy:prod": "serverless deploy --stage prod",
+    "remove:dev": "serverless remove --stage dev",
+    "remove:prod": "serverless remove --stage prod",
+    "logs": "serverless logs -f api --tail",
+    "info": "serverless info"
+  },
+  "keywords": [
+    "fastapi",
+    "serverless",
+    "lambda",
+    "api-gateway",
+    "python"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-python-requirements": "^6.1.0"
+  }
+}
+
