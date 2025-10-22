@@ -47,8 +47,11 @@ class ContactForm(BaseModel):
         max_length=100,
         examples=["Textiles"],
     )
-    quantity: Optional[int] = Field(
-        None, description="Quantity requested", ge=1, examples=[100]
+    quantity: Optional[str] = Field(
+        None, 
+        description="Quantity requested (can be a number or descriptive text)", 
+        max_length=100,
+        examples=["100", "More than 10,000 units", "To be confirmed"]
     )
     message: str = Field(
         ...,
