@@ -28,7 +28,7 @@ class TestContactFormSchema:
             "phone": "+52 123 456 7890",
             "company": "Test Corp",
             "product_type": "Textiles",
-            "quantity": 100,
+            "quantity": "Más de 10,000 unidades (opcional)",
             "message": "This is a test message.",
         }
 
@@ -37,7 +37,9 @@ class TestContactFormSchema:
         assert form.full_name == data["full_name"]
         assert form.email == data["email"]
         assert form.company == data["company"]
+        assert form.product_type == data["product_type"]
         assert form.quantity == data["quantity"]
+        assert form.message == data["message"]
 
     def test_valid_contact_form_minimal(self):
         """Test valid contact form with only required fields."""
@@ -129,14 +131,11 @@ class TestContactFormSchema:
             "full_name": "Test User",
             "email": "test@example.com",
             "phone": "1234567890",
-            "quantity": -5,
+            "quantity": "Más de 10,000 unidades (opcional)",
             "message": "Test message",
         }
-
-        with pytest.raises(ValidationError) as exc_info:
-            ContactForm(**data)
-
-        assert "quantity" in str(exc_info.value).lower()
+        form = ContactForm(**data)
+        assert form.quantity == data["quantity"]
 
 
 class TestContactResponseSchema:
@@ -181,7 +180,7 @@ class TestClientCreateSchema:
             "message": "Test message",
             "company": "Test Co",
             "product_type": "Type A",
-            "quantity": 50,
+            "quantity": "Más de 10,000 unidades (opcional)",
         }
 
         client_create = ClientCreate(**data)

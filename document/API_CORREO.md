@@ -16,7 +16,7 @@
 │    "phone": "+52 123 456 7890",                             │
 │    "company": "Empresa S.A." (opcional),                    │
 │    "product_type": "Textiles" (opcional),                   │
-│    "quantity": 100 (opcional),                              │
+│    "quantity": "Más de 10,000 unidades" (opcional),                              │
 │    "message": "Necesito información..."                     │
 │  }                                                           │
 └───────────────────────────┬─────────────────────────────────┘
@@ -375,7 +375,7 @@ Body (raw JSON):
   "phone": "+52 123 456 7890",
   "company": "Test Corp",
   "product_type": "Textiles",
-  "quantity": 100,
+  "quantity": "Más de 10,000 unidades",
   "message": "Necesito información sobre sus productos textiles."
 }
 ```

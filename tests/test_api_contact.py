@@ -157,7 +157,7 @@ class TestContactAPI:
             "phone": "+52 123 456 7890",
             "company": "Complete Corp",
             "product_type": "Premium Textiles",
-            "quantity": 500,
+            "quantity": "Más de 10,000 unidades (opcional)",
             "message": "This is a complete submission with all fields.",
         }
 

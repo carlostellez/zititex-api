@@ -89,7 +89,7 @@ class ContactForm(BaseModel):
                 "phone": "+52 123 456 7890",
                 "company": "Empresa S.A.",
                 "product_type": "Textiles",
-                "quantity": 100,
+                "quantity": "Más de 10,000 unidades",
                 "message": "Me gustaría obtener más información sobre sus productos.",
             }
         }
@@ -184,7 +184,7 @@ class ClientResponse(BaseModel):
                 "phone": "+52 123 456 7890",
                 "company": "Empresa S.A.",
                 "product_type": "Textiles",
-                "quantity": 100,
+                "quantity": "Más de 10,000 unidades",
                 "message": "Me gustaría obtener más información.",
                 "created_at": "2024-01-15T10:30:00",
                 "updated_at": "2024-01-15T10:30:00",

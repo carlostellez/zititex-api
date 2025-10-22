@@ -40,8 +40,8 @@ class Client(Base):
     email = Column(String(255), nullable=False, index=True)
     phone = Column(String(20), nullable=False)
     company = Column(String(255), nullable=True)
-    product_type = Column(String(100), nullable=True)
-    quantity = Column(Integer, nullable=True)
+    product_type = Column(String(50), nullable=True)
+    quantity = Column(String(50), nullable=True)
     message = Column(Text, nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

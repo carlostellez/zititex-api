@@ -282,7 +282,7 @@ def sample_client_data() -> dict:
         "phone": "+52 123 456 7890",
         "company": "Test Company",
         "product_type": "Textiles",
-        "quantity": 100,
+        "quantity": "Más de 10,000 unidades",
         "message": "Test message",
     }
 ```

@@ -128,7 +128,7 @@ class TestMailgunService:
             admin_email="admin@test.com",
             company="Test Company",
             product_type="Textiles",
-            quantity=100,
+            quantity="Más de 10,000 unidades (opcional)",
         )
 
         assert result is True
@@ -136,7 +136,8 @@ class TestMailgunService:
         call_args_str = str(mock_post.call_args_list)
         assert "Test Company" in call_args_str
         assert "Textiles" in call_args_str
-
+        assert "Más de 10,000 unidades (opcional)" in call_args_str
+        
     @patch("app.services.mailgun.requests.post")
     def test_send_contact_form_email_admin_fails(self, mock_post, mailgun_service):
         """Test contact form when admin email fails."""
