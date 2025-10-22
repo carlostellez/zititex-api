@@ -134,7 +134,7 @@ class ClientCreate(BaseModel):
     phone: str
     company: Optional[str] = None
     product_type: Optional[str] = None
-    quantity: Optional[int] = None
+    quantity: Optional[str] = None
     message: str
 
 
@@ -150,7 +150,7 @@ class ClientUpdate(BaseModel):
     phone: Optional[str] = None
     company: Optional[str] = None
     product_type: Optional[str] = None
-    quantity: Optional[int] = None
+    quantity: Optional[str] = None
     message: Optional[str] = None
 
 
@@ -167,7 +167,7 @@ class ClientResponse(BaseModel):
     phone: str
     company: Optional[str] = None
     product_type: Optional[str] = None
-    quantity: Optional[int] = None
+    quantity: Optional[str] = None
     message: str
     created_at: datetime
     updated_at: datetime
